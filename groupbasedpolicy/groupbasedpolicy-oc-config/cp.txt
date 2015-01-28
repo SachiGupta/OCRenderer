@@ -1,0 +1,1 @@
+/root/.m2/repository/org/codehaus/sonar-plugins/java/sonar-jacoco-listeners/2.4/sonar-jacoco-listeners-2.4.jar

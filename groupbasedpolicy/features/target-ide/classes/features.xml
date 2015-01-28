@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vi: set et smarttab sw=4 tabstop=4: -->
+<!--
+ Copyright (c) 2014 Cisco Systems, Inc. and others.  All rights reserved.
+
+ This program and the accompanying materials are made available under the
+ terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ and is available at http://www.eclipse.org/legal/epl-v10.html
+-->
+<features name="odl-groupbasedpolicy-0.2.0-SNAPSHOT" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.2.0 http://karaf.apache.org/xmlns/features/v1.2.0">
+    <repository>mvn:org.opendaylight.yangtools/features-yangtools/0.7.0-SNAPSHOT/xml/features</repository>
+    <repository>mvn:org.opendaylight.controller/features-mdsal/1.2.0-SNAPSHOT/xml/features</repository>
+    <repository>mvn:org.opendaylight.openflowplugin/features-openflowplugin/0.1.0-SNAPSHOT/xml/features</repository>
+    <repository>mvn:org.opendaylight.openflowplugin/features-openflowplugin-extension/0.1.0-SNAPSHOT/xml/features</repository>
+    <repository>mvn:org.opendaylight.controller/features-base/1.5.0-SNAPSHOT/xml/features</repository>
+    <repository>mvn:org.opendaylight.controller/features-nsf/0.5.0-SNAPSHOT/xml/features</repository>
+    <feature name='odl-groupbasedpolicy-ofoverlay' version='0.2.0-SNAPSHOT' description='OpenDaylight :: groupbasedpolicy :: OpenFlow Overlay '>
+        <feature version="1.2.0-SNAPSHOT">odl-mdsal-broker</feature>
+        <feature version='0.7.0-SNAPSHOT'>odl-yangtools-binding</feature>
+        <feature version='0.7.0-SNAPSHOT'>odl-yangtools-models</feature>
+        <feature version="0.1.0-SNAPSHOT">odl-openflowplugin-flow-services</feature>
+        <feature version='0.1.0-SNAPSHOT'>odl-openflowplugin-nxm-extensions</feature>
+        <bundle>mvn:org.opendaylight.groupbasedpolicy/groupbasedpolicy/0.2.0-SNAPSHOT</bundle>
+        <bundle start="true">mvn:com.fasterxml.jackson.core/jackson-annotations/2.3.2</bundle>
+        <bundle start="true">mvn:com.fasterxml.jackson.core/jackson-core/2.3.2</bundle>
+        <bundle start="true">mvn:com.fasterxml.jackson.core/jackson-databind/2.3.2</bundle>
+        <configfile finalname="etc/opendaylight/karaf/15-groupbasedpolicy-ofoverlay.xml">mvn:org.opendaylight.groupbasedpolicy/groupbasedpolicy-ofoverlay-config/0.2.0-SNAPSHOT/xml/config</configfile>
+    </feature>
+
+    <feature name='odl-groupbasedpolicy-oc' version='0.2.0-SNAPSHOT' description='OpenDaylight :: groupbasedpolicy :: Opencontrail'>
+        <feature version="1.2.0-SNAPSHOT">odl-mdsal-broker</feature>
+        <feature>odl-base-all</feature>
+        <feature>odl-nsf-all</feature>
+        <feature version='0.7.0-SNAPSHOT'>odl-yangtools-binding</feature>
+        <feature version='0.7.0-SNAPSHOT'>odl-yangtools-models</feature>
+        <bundle>mvn:org.opendaylight.groupbasedpolicy/groupbasedpolicy/0.2.0-SNAPSHOT</bundle>
+        <bundle start="true">mvn:com.fasterxml.jackson.core/jackson-annotations/2.3.2</bundle>
+        <bundle start="true">mvn:com.fasterxml.jackson.core/jackson-core/2.3.2</bundle>
+        <bundle start="true">mvn:com.fasterxml.jackson.core/jackson-databind/2.3.2</bundle>
+        <configfile finalname="etc/opendaylight/karaf/15-groupbasedpolicy-oc.xml">mvn:org.opendaylight.groupbasedpolicy/groupbasedpolicy-oc-config/0.2.0-SNAPSHOT/xml/config
+       </configfile>
+    </feature>
+
+
+    <feature name='odl-groupbasedpolicy-openstackgbp' version='0.2.0-SNAPSHOT' description='OpenDaylight :: groupbasedpolicy :: Support OpenStack GBP Endpoints '>
+        <feature version="0.2.0-SNAPSHOT">odl-groupbasedpolicy-ofoverlay</feature>
+        <feature version="1.2.0-SNAPSHOT">odl-mdsal-broker</feature>
+        <bundle>mvn:org.opendaylight.groupbasedpolicy/groupbasedpolicy/0.2.0-SNAPSHOT</bundle>
+        <bundle start="true">mvn:com.fasterxml.jackson.core/jackson-annotations/2.3.2</bundle>
+        <bundle start="true">mvn:com.fasterxml.jackson.core/jackson-core/2.3.2</bundle>
+        <bundle start="true">mvn:com.fasterxml.jackson.core/jackson-databind/2.3.2</bundle>
+        <configfile finalname="etc/opendaylight/karaf/15-groupbasedpolicy-openstackendpoint.xml">mvn:org.opendaylight.groupbasedpolicy/groupbasedpolicy-openstackendpoint-config/0.2.0-SNAPSHOT/xml/config</configfile>
+    </feature>
+</features>
