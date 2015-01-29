@@ -8,6 +8,7 @@
  */
 package org.opendaylight.groupbasedpolicy.renderer.oc;
 
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
@@ -61,5 +62,11 @@ public class Utils {
             LOGGER.error("Exception :  " + ex);
             return false;
         }
+    }
+    
+    public static String uuidNameFormat(String value){
+    	String[] pattern = value.split("=");
+    	value = pattern[1].replace("]", "");
+    	return value;
     }
 }
