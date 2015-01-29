@@ -45,6 +45,7 @@ public class OcRenderer implements AutoCloseable, DataChangeListener {
     private final PolicyResolver policyResolver;
     private final EndpointManager endpointManager;
     private final L2DomainManager l2domainManager;
+    private final EndpointGroupManager endpointGroupManager;
     private final PolicyManager policyManager;
 
     private final ScheduledExecutorService executor;
@@ -70,13 +71,14 @@ public class OcRenderer implements AutoCloseable, DataChangeListener {
         endpointManager = new EndpointManager(dataProvider, rpcRegistry,
                                               executor);
         l2domainManager = new L2DomainManager(dataProvider,rpcRegistry,executor);
-        
+        endpointGroupManager = new EndpointGroupManager(dataProvider,rpcRegistry,executor);        
         policyResolver = new PolicyResolver(dataProvider, executor);
 
         policyManager = new PolicyManager(dataProvider,
                                           policyResolver,
                                           endpointManager,
                                           l2domainManager,
+                                          endpointGroupManager,
                                           rpcRegistry,
                                           executor);
 
@@ -117,6 +119,7 @@ public class OcRenderer implements AutoCloseable, DataChangeListener {
         if (policyResolver != null) policyResolver.close();
         if (endpointManager != null) endpointManager.close();
         if (l2domainManager != null) l2domainManager.close();
+        if (endpointGroupManager != null) endpointGroupManager.close();
     }
 
     // ******************

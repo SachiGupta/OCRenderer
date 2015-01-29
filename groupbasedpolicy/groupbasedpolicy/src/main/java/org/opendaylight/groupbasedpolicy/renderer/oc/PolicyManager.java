@@ -28,10 +28,12 @@ import org.opendaylight.groupbasedpolicy.resolver.PolicyListener;
 import org.opendaylight.groupbasedpolicy.resolver.PolicyResolver;
 import org.opendaylight.groupbasedpolicy.resolver.PolicyScope;
 import org.opendaylight.groupbasedpolicy.util.SingletonTask;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.groupbasedpolicy.common.rev140421.EndpointGroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groupbasedpolicy.common.rev140421.L2FloodDomainId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groupbasedpolicy.common.rev140421.TenantId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groupbasedpolicy.common.rev140421.UniqueId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groupbasedpolicy.policy.rev140421.SubjectFeatureDefinitions;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.groupbasedpolicy.policy.rev140421.tenants.tenant.EndpointGroupKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +44,7 @@ import org.slf4j.LoggerFactory;
  * registry
  * @author readams
  */
-public class PolicyManager implements PolicyListener,EndpointListener, L2DomainListener {
+public class PolicyManager implements PolicyListener,EndpointListener, L2DomainListener, EndpointGroupListener {
     private static final Logger LOG = 
             LoggerFactory.getLogger(PolicyManager.class);
 
@@ -72,6 +74,7 @@ public class PolicyManager implements PolicyListener,EndpointListener, L2DomainL
                          PolicyResolver policyResolver,
                          EndpointManager endpointManager, 
                          L2DomainManager l2domainManager,
+                         EndpointGroupManager endpointGroupManager,
                          RpcProviderRegistry rpcRegistry,
                          ScheduledExecutorService executor) {
         super();
@@ -81,6 +84,7 @@ public class PolicyManager implements PolicyListener,EndpointListener, L2DomainL
        policyScope = policyResolver.registerListener(this);
        endpointManager.registerListener((EndpointListener) this);
        l2domainManager.registerListener((L2DomainListener) this);
+       endpointGroupManager.registerListener((EndpointGroupListener) this);
        
 //        dirty = new AtomicReference<>(new Dirty());
         contrailTask = new SingletonTask(executor, new ContrailTask());
@@ -259,10 +263,15 @@ public class PolicyManager implements PolicyListener,EndpointListener, L2DomainL
     }
     
     public void L2DomainUpdated(L2FloodDomainId id) {
-    	System.out.println(id);
 		// TODO Auto-generated method stub
 		
 	}
+    
+    public void endpointGroupUpdated(EndpointGroupId endpointGroupId, EndpointGroupKey egkey) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 	@Override
 	public void endpointUpdated(EpKey epKey) {
