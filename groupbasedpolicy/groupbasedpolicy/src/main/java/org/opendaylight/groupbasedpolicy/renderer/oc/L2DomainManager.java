@@ -45,9 +45,9 @@ public class L2DomainManager implements AutoCloseable, DataChangeListener {
 			.getLogger(L2DomainManager.class);
 	static ApiConnector apiConnector;
 	
-	private static final InstanceIdentifier<L2FloodDomain> floodIid = InstanceIdentifier
-			.builder(Tenants.class).child(Tenant.class)
-			.child(L2FloodDomain.class).build();
+//	private static final InstanceIdentifier<L2FloodDomain> floodIid = InstanceIdentifier
+//			.builder(Tenants.class).child(Tenant.class)
+//			.child(L2FloodDomain.class).build();
 
 	private static final InstanceIdentifier<Tenant> TenantIid = InstanceIdentifier
 			.builder(Tenants.class).child(Tenant.class).build();
@@ -117,6 +117,13 @@ public class L2DomainManager implements AutoCloseable, DataChangeListener {
 
 	}
 	
+	 /**
+     * Invoked when a L2FloodDomain create is requested 
+     *
+     *@param  tenant 
+     *                An instance of tenant data
+     */
+	
 	public void createL2FloodDomain(Tenant tenant) throws IOException{
 		String tenantID = tenant.getId().toString();
 		if (tenant.getL2FloodDomain() != null){
@@ -127,6 +134,15 @@ public class L2DomainManager implements AutoCloseable, DataChangeListener {
 		}
 	}
 	
+	 /**
+     * Invoked when a L2FloodDomain create is requested to indicate if the specified
+     * L2FloodDomain can be created using the specified delta.
+     *
+     *@param  l2FloodDomain 
+     *                An instance of l2FloodDomain
+     *@param  tenantid
+     *                Tenant id
+     */
 	
 	public int canCreateFloodDomain(L2FloodDomain l2FloodDomain, String tenantID) {
         apiConnector = OcRenderer.apiConnector;
@@ -138,23 +154,23 @@ public class L2DomainManager implements AutoCloseable, DataChangeListener {
         }
         
         try {
-            String networkUUID = Utils.uuidNameFormat(l2FloodDomain.getId().toString());
+            String l2FloodDomainUUID = Utils.uuidNameFormat(l2FloodDomain.getId().toString());
             String projectUUID = Utils.uuidNameFormat(tenantID);
             try {
-                if (!(networkUUID.contains("-"))) {
-                	networkUUID = Utils.uuidFormater(networkUUID);
+                if (!(l2FloodDomainUUID.contains("-"))) {
+                	l2FloodDomainUUID = Utils.uuidFormater(l2FloodDomainUUID);
                 }
                 if (!(projectUUID.contains("-"))) {
                     projectUUID = Utils.uuidFormater(projectUUID);
                 }
-                boolean isValidNetworkUUID = Utils.isValidHexNumber(networkUUID);
+                boolean isValidl2FloodDomainUUID = Utils.isValidHexNumber(l2FloodDomainUUID);
                 boolean isValidprojectUUID = Utils.isValidHexNumber(projectUUID);
-                if (!isValidNetworkUUID || !isValidprojectUUID) {
+                if (!isValidl2FloodDomainUUID || !isValidprojectUUID) {
                     LOG.info("Badly formed Hexadecimal UUID...");
                     return HttpURLConnection.HTTP_BAD_REQUEST;
                 }
                 projectUUID = UUID.fromString(projectUUID).toString();
-                networkUUID = UUID.fromString(networkUUID).toString();
+                l2FloodDomainUUID = UUID.fromString(l2FloodDomainUUID).toString();
             } catch (Exception ex) {
                 LOG.error("UUID input incorrect", ex);
                 return HttpURLConnection.HTTP_BAD_REQUEST;
@@ -175,9 +191,9 @@ public class L2DomainManager implements AutoCloseable, DataChangeListener {
                     return HttpURLConnection.HTTP_NOT_FOUND;
                 }
            }
-           VirtualNetwork virtualNetworkById = (VirtualNetwork) apiConnector.findById(VirtualNetwork.class, networkUUID);
+           VirtualNetwork virtualNetworkById = (VirtualNetwork) apiConnector.findById(VirtualNetwork.class, l2FloodDomainUUID);
             if (virtualNetworkById != null) {
-                LOG.warn("Network already exists with UUID" + networkUUID);
+                LOG.warn("l2FloodDomain already exists with UUID" + l2FloodDomainUUID);
                 return HttpURLConnection.HTTP_FORBIDDEN;
             }
             return HttpURLConnection.HTTP_OK;
@@ -188,45 +204,51 @@ public class L2DomainManager implements AutoCloseable, DataChangeListener {
     }
 
     /**
-     * Invoked to create the specified Neutron Network.
+     * Invoked to create the specified L2FloodDomain.
      *
-     * @param network
-     *            An instance of new Neutron Network object.
+     * @param L2FloodDomain
+     *            An instance of new L2FloodDomain object.
+     *            
+     * @param  tenantid
+     *            Tenant id
      */
     private void createFloodDomain(L2FloodDomain l2FloodDomain, String tenantid) throws IOException {
         VirtualNetwork virtualNetwork = new VirtualNetwork();
         virtualNetwork = mapNetworkProperties(l2FloodDomain, virtualNetwork, tenantid);
-        boolean networkCreated;
+        boolean l2FloodDomainCreated;
         try {
-            networkCreated = apiConnector.create(virtualNetwork);
-            if (!networkCreated) {
-                LOG.warn("Network creation failed..");
+        	l2FloodDomainCreated = apiConnector.create(virtualNetwork);
+            if (!l2FloodDomainCreated) {
+                LOG.warn("l2FloodDomain creation failed..");
             }
         } catch (IOException ioEx) {
             LOG.error("Exception : " + ioEx);
         }
-        LOG.info("Network : " + virtualNetwork.getName() + "  having UUID : " + virtualNetwork.getUuid() + "  sucessfully created...");
+        LOG.info("l2FloodDomain : " + virtualNetwork.getName() + "  having UUID : " + virtualNetwork.getUuid() + "  sucessfully created...");
     }
     
     /**
-     * Invoked to map the NeutronNetwork object properties to the virtualNetwork
+     * Invoked to map the L2FloodDomain object properties to the virtualNetwork
      * object.
      *
-     * @param neutronNetwork
-     *            An instance of new Neutron Network object.
+     * @param L2FloodDomain
+     *            An instance of L2FloodDomain object.
      * @param virtualNetwork
      *            An instance of new virtualNetwork object.
+     *            
+     * @param tenantid
+     *            tenant id           
      * @return {@link VirtualNetwork}
      */
     private VirtualNetwork mapNetworkProperties(L2FloodDomain l2FloodDomain, VirtualNetwork virtualNetwork, String tenantid) {
-        String networkUUID = Utils.uuidNameFormat(l2FloodDomain.getId().toString());
+        String l2FloodDomainUUID = Utils.uuidNameFormat(l2FloodDomain.getId().toString());
         String projectUUID = Utils.uuidNameFormat(tenantid);
-        String networkName = Utils.uuidNameFormat(l2FloodDomain.getName().toString());
+        String l2FloodDomainName = Utils.uuidNameFormat(l2FloodDomain.getName().toString());
         try {
-            if (!(networkUUID.contains("-"))) {
-                networkUUID = Utils.uuidFormater(networkUUID);
+            if (!(l2FloodDomainUUID.contains("-"))) {
+            	l2FloodDomainUUID = Utils.uuidFormater(l2FloodDomainUUID);
             }
-            networkUUID = UUID.fromString(networkUUID).toString();
+            l2FloodDomainUUID = UUID.fromString(l2FloodDomainUUID).toString();
             if (!(projectUUID.contains("-"))) {
                 projectUUID = Utils.uuidFormater(projectUUID);
             }
@@ -236,11 +258,21 @@ public class L2DomainManager implements AutoCloseable, DataChangeListener {
         } catch (Exception ex) {
             LOG.error("UUID input incorrect", ex);
         }
-        virtualNetwork.setName(networkName);
-        virtualNetwork.setUuid(networkUUID);
-        virtualNetwork.setDisplayName(networkName);
+        virtualNetwork.setName(l2FloodDomainName);
+        virtualNetwork.setUuid(l2FloodDomainUUID);
+        virtualNetwork.setDisplayName(l2FloodDomainName);
         return virtualNetwork;
     }
+    
+    /**
+     * Invoked when a L2FloodDomain update is requested 
+     *
+     *@param  oldData 
+     *                An instance of Old tenant data
+     *@param  newData 
+     *                An instance of New tenant data
+     *                
+     */
     
     public void updateL2FloodDomain(Tenant oldData, Tenant newData) throws IOException{
 		String tenantID = newData.getId().toString();
@@ -270,16 +302,28 @@ public class L2DomainManager implements AutoCloseable, DataChangeListener {
 		}
 	}
     
+    /**
+     * Invoked when a L2FloodDomain update is requested to indicate if the specified
+     * L2FloodDomain can be changed using the specified delta.
+     *
+     *@param  l2FloodDomainNew 
+     *                An instance of updated l2FloodDomain
+     *@param  l2FloodDomainOld 
+     *                An instance of old l2FloodDomain
+     *@param  tenantid
+     *                Tenant id
+     */
+    
     public int canUpdateFloodDomain(L2FloodDomain l2FloodDomainNew, L2FloodDomain l2FloodDomainOld, String tenantID ) {
         VirtualNetwork virtualnetwork;
         apiConnector = OcRenderer.apiConnector;
         
-        String networkUUID = Utils.uuidNameFormat(l2FloodDomainOld.getId().toString());
+        String l2FloodDomainUUID = Utils.uuidNameFormat(l2FloodDomainOld.getId().toString());
         String projectUUID = Utils.uuidNameFormat(tenantID);
         try {
-            if (!(networkUUID.contains("-"))) {
-                networkUUID = Utils.uuidFormater(networkUUID);
-                networkUUID = UUID.fromString(networkUUID).toString();
+            if (!(l2FloodDomainUUID.contains("-"))) {
+            	l2FloodDomainUUID = Utils.uuidFormater(l2FloodDomainUUID);
+            	l2FloodDomainUUID = UUID.fromString(l2FloodDomainUUID).toString();
             }
             if (!(projectUUID.contains("-"))) {
                 projectUUID = Utils.uuidFormater(projectUUID);
@@ -304,7 +348,7 @@ public class L2DomainManager implements AutoCloseable, DataChangeListener {
             return HttpURLConnection.HTTP_INTERNAL_ERROR;
         }
         try {
-            virtualnetwork = (VirtualNetwork) apiConnector.findById(VirtualNetwork.class, networkUUID);
+            virtualnetwork = (VirtualNetwork) apiConnector.findById(VirtualNetwork.class, l2FloodDomainUUID);
         } catch (IOException ex) {
             LOG.error("Exception :     " + ex);
             return HttpURLConnection.HTTP_INTERNAL_ERROR;
@@ -319,23 +363,27 @@ public class L2DomainManager implements AutoCloseable, DataChangeListener {
     /**
      * Invoked to update the L2 Flood Domain
      *
+     *@param  l2FloodDomain 
+     *                An instance of updated l2FloodDomain
+     *@param  tenantid
+     *                Tenant id
      */
     private void updateFloodDomain(L2FloodDomain l2FloodDomain, String tenantid) throws IOException {
-        String networkUUID = Utils.uuidNameFormat(l2FloodDomain.getId().toString());
+        String l2FloodDomainUUID = Utils.uuidNameFormat(l2FloodDomain.getId().toString());
         try {
-            if (!(networkUUID.contains("-"))) {
-                networkUUID = Utils.uuidFormater(networkUUID);
+            if (!(l2FloodDomainUUID.contains("-"))) {
+            	l2FloodDomainUUID = Utils.uuidFormater(l2FloodDomainUUID);
             }
-            networkUUID = UUID.fromString(networkUUID).toString();
+            l2FloodDomainUUID = UUID.fromString(l2FloodDomainUUID).toString();
         } catch (Exception ex) {
             LOG.error("UUID input incorrect", ex);
         }
-        VirtualNetwork virtualNetwork = (VirtualNetwork) apiConnector.findById(VirtualNetwork.class, networkUUID);
+        VirtualNetwork virtualNetwork = (VirtualNetwork) apiConnector.findById(VirtualNetwork.class, l2FloodDomainUUID);
         virtualNetwork.setDisplayName(Utils.uuidNameFormat(l2FloodDomain.getName().toString()));
-        boolean networkUpdate;
+        boolean l2FloodDomainUpdate;
         try {
-            networkUpdate = apiConnector.update(virtualNetwork);
-            if (!networkUpdate) {
+        	l2FloodDomainUpdate = apiConnector.update(virtualNetwork);
+            if (!l2FloodDomainUpdate) {
                 LOG.warn("L2 flood domain Updation failed..");
             }
         } catch (IOException e) {

@@ -64,6 +64,15 @@ public class Utils {
         }
     }
     
+    /**
+     * Invoked to format the UUID/Name in correct format.
+     *
+     * @param String
+     *            An instance of UUID/Name string.
+     *
+     * @return Correctly formated UUID/name string.
+     */
+    
     public static String uuidNameFormat(String value){
     	String[] pattern = value.split("=");
     	value = pattern[1].replace("]", "");
